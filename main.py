@@ -5,9 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 load_dotenv()
+
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-model = genai.GenerativeModel("models/gemini-pro")
+model = genai.GenerativeModel(model_name="models/gemini-pro")
 
 app = FastAPI()
 
@@ -23,10 +24,10 @@ app.add_middleware(
 async def chat(request: Request):
     try:
         data = await request.json()
-        user_input = data.get("message", "")
+        user_input = data.get("message")
 
         if not user_input:
-            return {"response": "❗ Empty input."}
+            return {"response": "❗ Empty message received."}
 
         response = model.generate_content(user_input)
         return {"response": response.text}
