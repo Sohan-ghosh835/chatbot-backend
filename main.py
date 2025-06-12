@@ -32,4 +32,4 @@ async def chat(request: Request):
     )
 
     reply = response['choices'][0]['message']['content']
-    return {"response": reply}
+    return {"reply": reply}
