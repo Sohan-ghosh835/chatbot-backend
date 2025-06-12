@@ -1,11 +1,13 @@
-import openai
+import os
+import google.generativeai as genai
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+model = genai.GenerativeModel("gemini-pro")
 
 app = FastAPI()
 
@@ -14,28 +16,20 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 @app.post("/chat")
 async def chat(request: Request):
     try:
         data = await request.json()
-        user_message = data.get("message")
+        user_input = data.get("message", "")
 
-        if not user_message:
-            return {"response": "❗ Empty message received."}
+        if not user_input:
+            return {"response": "❗ Empty input."}
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_message}
-            ]
-        )
-
-        reply = response['choices'][0]['message']['content']
-        return {"response": reply}
+        response = model.generate_content(user_input)
+        return {"response": response.text}
 
     except Exception as e:
         return {"response": f"⚠️ Error: {str(e)}"}
