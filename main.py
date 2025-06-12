@@ -1,14 +1,13 @@
-import os
-import google.generativeai as genai
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+import openai
+import os
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel(model_name="models/gemini-pro")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_base = "https://openrouter.ai/api/v1"  # 👈 required
 
 app = FastAPI()
 
@@ -17,20 +16,28 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 @app.post("/chat")
 async def chat(request: Request):
     try:
         data = await request.json()
-        user_input = data.get("message")
+        user_message = data.get("message")
 
-        if not user_input:
+        if not user_message:
             return {"response": "❗ Empty message received."}
 
-        response = model.generate_content(user_input)
-        return {"response": response.text}
+        response = openai.ChatCompletion.create(
+            model="openchat/openchat-3.5",  # ✅ or choose another like "mistralai/mixtral-8x7b-instruct"
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": user_message}
+            ]
+        )
+
+        reply = response['choices'][0]['message']['content']
+        return {"response": reply}
 
     except Exception as e:
         return {"response": f"⚠️ Error: {str(e)}"}
