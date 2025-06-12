@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_base = "https://openrouter.ai/api/v1"  # ✅ critical
+openai.api_base = "https://openrouter.ai/api/v1"  # ✅ Must point to OpenRouter
 
 app = FastAPI()
 
@@ -29,14 +29,14 @@ async def chat(request: Request):
             return {"response": "❗ Empty message received."}
 
         response = openai.ChatCompletion.create(
-            model="openchat/openchat-3.5",
+            model="mistralai/mixtral-8x7b-instruct",  # ✅ this model is supported
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": user_message}
             ]
         )
 
-        reply = response['choices'][0]['message']['content']
+        reply = response["choices"][0]["message"]["content"]
         return {"response": reply}
 
     except Exception as e:
