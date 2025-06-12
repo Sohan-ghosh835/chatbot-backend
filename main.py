@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 import os
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=api_key)
 
 app = FastAPI()
 
@@ -25,8 +27,6 @@ async def chat(request: Request):
 
         if not user_message:
             return {"response": "❗ Empty message received."}
-
-        client = openai.OpenAI(api_key=openai.api_key)
 
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
