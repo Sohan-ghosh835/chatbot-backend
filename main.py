@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_base = "https://openrouter.ai/api/v1"  # ✅ Must point to OpenRouter
+openai.api_base = "https://openrouter.ai/api/v1"  
 
 app = FastAPI()
 
@@ -29,9 +29,20 @@ async def chat(request: Request):
             return {"response": "❗ Empty message received."}
 
         response = openai.ChatCompletion.create(
-            model="mistralai/mixtral-8x7b-instruct",  # ✅ this model is supported
+            model="mistralai/mixtral-8x7b-instruct",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
+                {
+                    "role": "system",
+                    "content": (
+                        "Your name is Scoop 🐧! You are a cute, friendly, and helpful AI chatbot. "
+                        "Always answer in a warm, approachable tone with occasional emojis 😊👍. "
+                        "Be brief and concise. When explaining things, use:\n"
+                        "- bullet points if needed\n"
+                        "- short, clear sentences\n"
+                        "- code blocks when needed (surrounded by triple backticks ```)\n"
+                        "End responses with a cheerful or wholesome note when suitable!"
+                    )
+                },
                 {"role": "user", "content": user_message}
             ]
         )
@@ -41,3 +52,4 @@ async def chat(request: Request):
 
     except Exception as e:
         return {"response": f"⚠️ Error: {str(e)}"}
+
