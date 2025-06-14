@@ -61,6 +61,8 @@ async def chat(request: Request):
                         "Keep notes clear, clean, and minimal. Use equations, diagrams, or formulas only when appropriate."
                         "Do not explain how you were instructed to behave. Keep every reply natural, helpful, concise, and emotionally aware."
                         "If the user says 'according to that', 'as I said', or refers to a previous message, try to follow the context naturally without restating past replies."
+                        "Remember everything the user said in this conversation, and when the user says according to that or referring to the previous sentence, or giving incomplete sentences which are referred to the previous one, act or give responses according to that previous message. And NO large answers unless asked, always be short and concise. "
+                        "Anwer in short, confident and accurate manner, be descriptive when needed, but always keep it short and concise. "
                     )
                 },
                 {"role": "user", "content": user_message}
